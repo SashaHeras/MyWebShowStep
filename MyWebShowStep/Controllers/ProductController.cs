@@ -146,6 +146,36 @@ namespace MyWebShowStep.Controllers
                 _context.Products.Update(p);
                 _context.SaveChanges();
             }
+            else if (Convert.ToInt32(Request.Form["prdType"]) == 2)
+            {
+                Cpu cp = new Cpu()
+                {
+                    Id = Convert.ToInt32(Request.Form["id"]),
+                    ProductId = Convert.ToInt32(Request.Form["productId"]),
+                    CoreFamily = Request.Form["coreFamily"].ToString(),
+                    CoresCount = Convert.ToInt32(Request.Form["coreCount"]),
+                    Speed = Convert.ToInt32(Request.Form["speed"])
+                };
+
+                _context.Cpus.Update(cp);
+                _context.Products.Update(p);
+                _context.SaveChanges();
+            }
+            else if (Convert.ToInt32(Request.Form["prdType"]) == 3)
+            {
+                Data.Monitor mp = new Data.Monitor()
+                {
+                    Id = Convert.ToInt32(Request.Form["id"]),
+                    ProductId = Convert.ToInt32(Request.Form["productId"]),
+                    DisplaySize = Request.Form["displaySize"].ToString(),
+                    MatrixType = Request.Form["matrixType"].ToString(),
+                    RefreshSpeed = Convert.ToInt32(Request.Form["refreshSpeed"])
+                };
+
+                _context.Monitors.Update(mp);
+                _context.Products.Update(p);
+                _context.SaveChanges();
+            }
 
             return Json(valid);
         }

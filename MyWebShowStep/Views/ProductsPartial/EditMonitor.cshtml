@@ -1,0 +1,31 @@
+﻿@model MyWebShowStep.Data.Monitor
+
+<table>
+    <tr>
+        <td>
+            Display size:
+        </td>
+        <td>
+            <input type="text" id="displaySize" value="@Model.DisplaySize" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Matrix type:
+        </td>
+        <td>
+            <input type="text" id="matrixType" value="@Model.MatrixType" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Refresh speed:
+        </td>
+        <td>
+            <input type="number" id="refreshSpeed" value="@Model.RefreshSpeed" />
+        </td>
+    </tr>
+</table>
+
+<input type="hidden" id="prdId" value="@Model.ProductId" />
+<input type="hidden" id="dataId" value="@Model.Id" />

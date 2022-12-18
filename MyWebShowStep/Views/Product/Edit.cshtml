@@ -46,15 +46,32 @@
     <div class="left-row">
     </div>
     <div class="center-row">
-        <div>
-            Name: <input id="prdName" type="text" value="@ViewBag.Product.Name" style="width: 650px"/>
-        </div>
-        <div>
-            Price: <input id="prdPrice" type="number" value="@ViewBag.Product.Price" />
-        </div>
-        <div>
-            Product type: @ViewBag.ProductType.Name
-        </div>
+        <table>
+            <tr>
+                <td>
+                    Name:
+                </td>
+                <td>
+                    <input id="prdName" type="text" value="@ViewBag.Product.Name" style="width: 650px" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Price:
+                </td>
+                <td>
+                    <input id="prdPrice" type="number" value="@ViewBag.Product.Price" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Product type:
+                </td>
+                <td>
+                    @ViewBag.ProductType.Name
+                </td>
+            </tr>
+        </table>
 
         <input type="hidden" id="productId" value="@ViewBag.Product.Id" />
         <input type="hidden" id="prdType" value="@ViewBag.Product.TypeId" />
@@ -77,6 +94,88 @@
         {
             GpuFields();
         }
+        else if (@ViewBag.Product.TypeId == 2)
+        {
+            CpuFields();
+        }
+        else if (@ViewBag.Product.TypeId == 3)
+        {
+            MonitorFields();
+        }
+    }
+
+    function MonitorFields()
+    {
+        obj.productId = document.getElementById("productId").value;
+        obj.prdName = document.getElementById("prdName").value;
+        obj.prdPrice = document.getElementById("prdPrice").value;
+        obj.prdType = document.getElementById("prdType").value;
+        obj.imagePath = document.getElementById("image").value;
+        obj.userId = document.getElementById("userId").value;
+
+        obj.displaySize = document.getElementById("displaySize").value;
+        obj.matrixType = document.getElementById("matrixType").value;
+        obj.refreshSpeed = document.getElementById("refreshSpeed").value;
+        obj.id = document.getElementById("dataId").value;
+
+        console.log(obj);
+
+        let formdata = new FormData();
+
+        for (var key in obj) {
+            formdata.append(key, obj[key]);
+        }
+
+        $.ajax({
+            url: "/Product/Edit",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result == true) {
+                    alert("Editted!");
+                }
+            }
+        });
+    }
+
+    function CpuFields()
+    {
+        obj.productId = document.getElementById("productId").value;
+        obj.prdName = document.getElementById("prdName").value;
+        obj.prdPrice = document.getElementById("prdPrice").value;
+        obj.prdType = document.getElementById("prdType").value;
+        obj.imagePath = document.getElementById("image").value;
+        obj.userId = document.getElementById("userId").value;
+
+        obj.coreCount = document.getElementById("coreCount").value;
+        obj.speed = document.getElementById("speed").value;
+        obj.coreFamily = document.getElementById("coreFamily").value;
+        obj.id = document.getElementById("dataId").value;
+
+        console.log(obj);
+
+        let formdata = new FormData();
+
+        for (var key in obj) {
+            formdata.append(key, obj[key]);
+        }
+
+        $.ajax({
+            url: "/Product/Edit",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result == true) {
+                    alert("Editted!");
+                }
+            }
+        });
     }
 
     function GpuFields()

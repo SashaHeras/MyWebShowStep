@@ -1,0 +1,31 @@
+﻿@model MyWebShowStep.Data.Cpu
+
+<table>
+    <tr>
+        <td>
+            Core family:
+        </td>
+        <td>
+            <input type="text" id="coreFamily" value="@Model.CoreFamily" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Speed:
+        </td>
+        <td>
+            <input type="number" id="speed" value="@Model.Speed" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Cores count:
+        </td>
+        <td>
+            <input type="number" id="coreCount" value="@Model.CoresCount" />
+        </td>
+    </tr>
+</table>
+
+<input type="hidden" id="prdId" value="@Model.ProductId" />
+<input type="hidden" id="dataId" value="@Model.Id" />
