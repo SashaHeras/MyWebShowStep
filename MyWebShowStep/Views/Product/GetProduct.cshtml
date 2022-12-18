@@ -35,6 +35,13 @@
         font-size: 18px;
         color: red;
     }
+
+    
+
+    #actions{
+        display: flex;
+        margin-top:8px;
+    }
 </style>
 
 <div class="main-row">
@@ -58,14 +65,18 @@
             var l = String.Concat("~/Views/ProductsPartial/", ViewBag.ProductType.PartialPage.ToString(), ".cshtml");
         }
         <partial name="@l.ToString()" model="@ViewBag.ProductData" />
+        <div id="actions">
+            <a href="/Product/Edit/@ViewBag.Product.Id" class="btn btn-warning" style="margin-right: 8px">Edit</a>
+            <a href="/Product/DeleteProduct/@ViewBag.Product.Id" class="btn btn-danger">Delete</a>
+        </div>
     </div>
+    
 </div>
 
+<script type="text/javascript" src="@Url.Content("~/js/EditGpuScript.js")"></script>
 <script>
     $(document).ready(function(){
         GetImg();
-        var r = document.getElementById("ram");
-        console.log(r);
     });
 
     function GetImg()

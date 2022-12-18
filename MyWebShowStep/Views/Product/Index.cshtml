@@ -20,6 +20,10 @@
         color: black;
     }
 
+    .text {
+
+    }
+
     #img{
         margin: 0 auto;
         display: block;
@@ -89,7 +93,7 @@
         });
     }
 
-    $( document ).ready(function() {
+    $(document).ready(function() {
         var ul = document.getElementById("productTypes");
 
         GetAllProducts();
@@ -168,16 +172,20 @@
                 img.id = "img";
                 card.appendChild(img);
 
+                var text = document.createElement("div");
+                text.className="text";
+
                 var a = document.createElement("a");
                 a.href = "/Product/GetProduct/" + res.products[i].id;
                 a.appendChild(document.createTextNode(res.products[i].name));
                 a.className = "prodName";
-                card.appendChild(a);
+                text.appendChild(a);
 
                 var p_price = document.createElement("p");
                 p_price.appendChild(document.createTextNode(res.products[i].price + "$"));
-                card.appendChild(p_price);
+                text.appendChild(p_price);
 
+                card.appendChild(text);
                 r.appendChild(card);
                 cont.appendChild(r);
                 cnt++;

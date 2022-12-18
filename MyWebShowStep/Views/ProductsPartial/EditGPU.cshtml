@@ -1,0 +1,17 @@
+﻿@model MyWebShowStep.Data.Gpu
+
+<div>
+    Vendor: <input type="text" id="vendor" value="@Model.Vendor"/>
+</div>
+<div>
+    Graphical chip: <input type="text" id="chip" value="@Model.GrapthChip" />
+</div>
+<div>
+    RAM: <input type="number" id="ram" value="@Model.RAM" />
+</div>
+<div>
+    Memory type: <input type="text" id="memory" value="@Model.MemoryType" />
+</div>
+
+<input type="hidden" id="prdId" value="@Model.ProductId" />
+<input type="hidden" id="dataId" value="@Model.Id" />

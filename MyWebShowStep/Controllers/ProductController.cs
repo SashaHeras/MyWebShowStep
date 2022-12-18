@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using MyWebShowStep.Data;
+using System;
 using System.IO;
+using System.Reflection.Metadata;
 
 namespace MyWebShowStep.Controllers
 {
@@ -26,6 +28,7 @@ namespace MyWebShowStep.Controllers
         }
 
         [HttpPost]
+        [Route("Product/GetAllProducts")]
         public JsonResult GetAllProducts()
         {
             var _products = _context.Products;
@@ -82,6 +85,69 @@ namespace MyWebShowStep.Controllers
             ViewBag.ProductData = obj;
 
             return View();
+        }
+
+        [HttpGet]
+        [Route("Product/Edit/{id?}")]
+        public IActionResult Edit(int id)
+        {
+            var product = _context.Products.Where(p => p.Id == id).FirstOrDefault();
+
+            ViewBag.Product = product;
+            ViewBag.ProductType = _context.ProductTypes.Where(p => p.Id == product.TypeId).FirstOrDefault();
+            object obj = null;
+
+            if (product.TypeId == 1)
+            {
+                obj = _context.Gpus.Where(g => g.ProductId == product.Id).FirstOrDefault();
+            }
+            else if (product.TypeId == 2)
+            {
+                obj = _context.Cpus.Where(g => g.ProductId == product.Id).FirstOrDefault();
+            }
+            else if (product.TypeId == 3)
+            {
+                obj = _context.Monitors.Where(g => g.ProductId == product.Id).FirstOrDefault();
+            }
+
+            ViewBag.ProductData = obj;
+
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult Edit()
+        {
+            bool valid = true;
+
+            Product p = new Product()
+            {
+                Id = Convert.ToInt32(Request.Form["productId"]),
+                Name = Request.Form["prdName"].ToString(),
+                ImagePath = Request.Form["imagePath"].ToString(),
+                Price = Convert.ToInt32(Request.Form["prdPrice"]),
+                TypeId = Convert.ToInt32(Request.Form["prdType"]),
+                UserId = Convert.ToInt32(Request.Form["userId"])
+            };
+
+            if (Convert.ToInt32(Request.Form["prdType"]) == 1)
+            {           
+                Gpu gp = new Gpu()
+                {
+                    Id = Convert.ToInt32(Request.Form["id"]),
+                    ProductId = Convert.ToInt32(Request.Form["productId"]),
+                    Vendor = Request.Form["vendor"].ToString(),
+                    GrapthChip = Request.Form["chip"].ToString(),
+                    RAM = Convert.ToInt32(Request.Form["ram"]),
+                    MemoryType = Request.Form["memory"].ToString()
+                };
+
+                _context.Gpus.Update(gp);
+                _context.Products.Update(p);
+                _context.SaveChanges();
+            }
+
+            return Json(valid);
         }
 
         [HttpPost]

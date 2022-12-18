@@ -38,23 +38,84 @@
     }
 </style>
 
+@{
+    var l = String.Concat("~/Views/ProductsPartial/", ViewBag.ProductType.EditPage.ToString(), ".cshtml");
+}
+
 <div class="main-row">
     <div class="left-row">
-        <img id="image" />
     </div>
     <div class="center-row">
-        <div id="name">
-            Name: <input id="prdName" type="text" value="@ViewBag.Product.Name" />
+        <div>
+            Name: <input id="prdName" type="text" value="@ViewBag.Product.Name" style="width: 650px"/>
         </div>
-        <div id="price">
+        <div>
             Price: <input id="prdPrice" type="number" value="@ViewBag.Product.Price" />
         </div>
-        <div id="typr">
+        <div>
             Product type: @ViewBag.ProductType.Name
         </div>
-        @{
-            var l = String.Concat("~/Views/ProductsPartial/", ViewBag.ProductType.PartialPage.ToString(), ".cshtml");
-        }
+
+        <input type="hidden" id="productId" value="@ViewBag.Product.Id" />
+        <input type="hidden" id="prdType" value="@ViewBag.Product.TypeId" />
+        <input type="hidden" id="image" value="@ViewBag.Product.ImagePath" />
+        <input type="hidden" id="userId" value="@ViewBag.Product.UserId" />
+        
         <partial name="@l.ToString()" model="@ViewBag.ProductData" />
+
+        <div class="submit-block">
+            <button id="edit" onclick="ReadFilds()">Submit</button>
+        </div>
     </div>
 </div>
+
+<script>  
+    var obj = {};
+
+    function ReadFilds() {
+        if (@ViewBag.Product.TypeId == 1)
+        {
+            GpuFields();
+        }
+    }
+
+    function GpuFields()
+    {
+        obj.productId = document.getElementById("productId").value;
+        obj.prdName = document.getElementById("prdName").value;
+        obj.prdPrice = document.getElementById("prdPrice").value;
+        obj.prdType = document.getElementById("prdType").value;
+        obj.imagePath = document.getElementById("image").value;
+        obj.userId = document.getElementById("userId").value;
+
+        obj.vendor = document.getElementById("vendor").value;
+        obj.chip = document.getElementById("chip").value;
+        obj.ram = document.getElementById("ram").value;
+        obj.memory = document.getElementById("memory").value;
+        obj.id = document.getElementById("dataId").value;
+
+        console.log(obj);
+
+        let formdata = new FormData();
+
+        for (var key in obj)
+        {
+            formdata.append(key, obj[key]);
+        }
+
+        $.ajax({
+            url: "/Product/Edit",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if(result==true)
+                {
+                    alert("Editted!");
+                }
+            }
+        });
+    }
+</script>
