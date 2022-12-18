@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .main-row {
+        display: flex;
+    }
+
+    .center-row {
+        width: 100%;
+        padding-left: 10px;
+    }
+
+    .left-row {
+        width: 500px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #image {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        margin: 0 auto;
+        display: block;
+        width: 100%;
+        width: 500px;
+        height: auto;
+    }
+
+    #name {
+        font-size: 24px;
+        font-style: normal black;
+    }
+
+    #price {
+        font-size: 18px;
+        color: red;
+    }
+</style>
+
+<div class="main-row">
+    <div class="left-row">
+        <img id="image" />
+    </div>
+    <div class="center-row">
+        <div id="name">
+            Name: <input id="prdName" type="text" value="@ViewBag.Product.Name" />
+        </div>
+        <div id="price">
+            Price: <input id="prdPrice" type="number" value="@ViewBag.Product.Price" />
+        </div>
+        <div id="typr">
+            Product type: @ViewBag.ProductType.Name
+        </div>
+        @{
+            var l = String.Concat("~/Views/ProductsPartial/", ViewBag.ProductType.PartialPage.ToString(), ".cshtml");
+        }
+        <partial name="@l.ToString()" model="@ViewBag.ProductData" />
+    </div>
+</div>

@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .main-row{
+        display: flex;
+    }
+    .center-row {
+        width: 100%;
+    }
+
+    .left-row {
+        width: 150px;
+        margin-left: 10px;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    #img{
+        margin: 0 auto;
+        display: block;
+    }
+
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        text-align: center;
+        margin: 5px;
+        max-width: 300px;
+        max-height: 325px;        
+        font-family: arial;
+    }
+
+    .price {
+        color: grey;
+        font-size: 22px;
+    }
+
+    .card button {
+        border: none;
+        outline: 0;
+        padding: 12px;
+        color: white;
+        background-color: #000;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        font-size: 18px;
+    }
+
+    .prodName{
+        font-size: 14px;
+    }
+
+        .card button:hover {
+            opacity: 0.7;
+        }
+</style>
+
+<div class="main-row">
+    <div class="left-row">
+        <div>All product types:</div>
+        <ul id="productTypes">
+
+        </ul>
+    </div>
+    <div class="center-row" id="productsList">
+        <div>All products:</div>
+        <div class="container" id="cont">
+        </div>
+    </div>
+</div>
+
+<script>
+    function GetAllProducts() {
+        var list = document.getElementById("productsList");
+        $.ajax({
+            url: "/Product/GetAllProducts",
+            type: "POST",
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                BuildList(result);
+            }
+        });
+    }
+
+    $( document ).ready(function() {
+        var ul = document.getElementById("productTypes");
+
+        GetAllProducts();
+
+        $.ajax({
+            url: "/Product/GetTypes",
+            type: "POST",
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                for (let i = 0; i < result.length; i++) {
+                    let li = document.createElement("li");
+                    let a = document.createElement("a");
+                    a.id = result[i].id;
+                    a.href="#";
+                    a.onclick = function () { GetProductsWithType(a.id); };
+                    a.appendChild(document.createTextNode(result[i].name));
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                    console.log(a);
+                }
+            }
+        });
+          
+    });
+    
+    function GetProductsWithType(id) {
+            var formData = new FormData();
+
+            formData.append("Id", id);
+
+            console.log(id);
+
+            $.ajax({
+                url: "/Product/GetProductsWithType",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    BuildList(result);
+                }
+            });
+        }
+
+    function ClearList()
+    {
+        const myNode = document.getElementById("cont");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.lastChild);
+        }
+    }
+
+    function BuildList(res)
+    {
+        ClearList();
+
+        var cont = document.getElementById("cont");
+        let cnt = 0;
+        let r_cnt = 1;
+        for (let i = 0; i < res.products.length; i++) {
+            if (cnt == 0) {
+                var r = document.createElement("div");
+                r.className = "row";
+                r.id = "row-" + r_cnt;
+            }
+            if (cnt != 4) {
+                var card = document.createElement("div");
+                card.className = "card";
+
+                var img = document.createElement("img");
+                img.src = "data:image/jpeg;base64," + res.products[i].image;
+                img.style.width = '80%';
+                img.id = "img";
+                card.appendChild(img);
+
+                var a = document.createElement("a");
+                a.href = "/Product/GetProduct/" + res.products[i].id;
+                a.appendChild(document.createTextNode(res.products[i].name));
+                a.className = "prodName";
+                card.appendChild(a);
+
+                var p_price = document.createElement("p");
+                p_price.appendChild(document.createTextNode(res.products[i].price + "$"));
+                card.appendChild(p_price);
+
+                r.appendChild(card);
+                cont.appendChild(r);
+                cnt++;
+            }
+            if (cnt == 4) {
+                cnt = 0;
+                r_cnt++;
+            }
+        }
+    }
+
+    function GetProduct(id)
+    {
+        var formdata = new FormData();
+        //appending image file object
+        formdata.append("Id", id);
+
+        $.ajax({
+            url: "/Product/GetProduct",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                window.location.href = "Product/GetProduct";
+            }
+        });
+    }
+    
+</script>

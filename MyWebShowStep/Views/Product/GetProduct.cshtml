@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+     .main-row{
+        display: flex;
+    }
+    .center-row {
+        width: 100%;
+        padding-left:10px;
+    }
+
+    .left-row {
+        width: 500px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #image {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        margin: 0 auto;
+        display: block;
+        width: 100%;
+        width: 500px;
+        height: auto;
+    }
+
+    #name{
+        font-size: 24px;
+        font-style: normal black;
+    }
+
+    #price {
+        font-size: 18px;
+        color: red;
+    }
+</style>
+
+<div class="main-row">
+    <div class="left-row">
+        <img id="image"/>
+    </div>
+    <div class="center-row">
+        <div id="name"> 
+            @ViewBag.Product.Name
+        </div>
+        <div id="price">
+            @{
+                var p = String.Concat(@ViewBag.Product.Price.ToString(),"$");            
+            }       
+            Price: @p
+        </div>
+        <div id="typr">
+            Product type: @ViewBag.ProductType.Name
+        </div>
+        @{
+            var l = String.Concat("~/Views/ProductsPartial/", ViewBag.ProductType.PartialPage.ToString(), ".cshtml");
+        }
+        <partial name="@l.ToString()" model="@ViewBag.ProductData" />
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        GetImg();
+        var r = document.getElementById("ram");
+        console.log(r);
+    });
+
+    function GetImg()
+    {
+        var formdata = new FormData();
+        //appending image file object
+        formdata.append("Id", @ViewBag.Product.Id);
+
+        $.ajax({
+            url: "/Product/GetProductImg",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                var im = document.getElementById("image");
+                im.src = "data:image/jpeg;base64," + result;
+            }
+        });
+    }
+</script>
