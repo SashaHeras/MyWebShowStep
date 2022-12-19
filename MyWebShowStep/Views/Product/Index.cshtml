@@ -55,6 +55,15 @@
         font-size: 18px;
     }
 
+    #filters{
+        display: flex;
+        height: 30px;
+    }
+
+    .filterField{
+        margin-right: 5px;
+    }
+
     .prodName{
         font-size: 14px;
     }
@@ -72,6 +81,9 @@
         </ul>
     </div>
     <div class="center-row" id="productsList">
+        <div id="filters">
+
+        </div>
         <div>All products:</div>
         <div class="container" id="cont">
         </div>
@@ -79,6 +91,9 @@
 </div>
 
 <script>
+    var filtersData = null;
+    var filterDataTypeId = 0;
+
     function GetAllProducts() {
         var list = document.getElementById("productsList");
         $.ajax({
@@ -96,6 +111,7 @@
     $(document).ready(function() {
         var ul = document.getElementById("productTypes");
 
+        filterDataTypeId = 0;
         GetAllProducts();
 
         $.ajax({
@@ -114,7 +130,6 @@
                     a.appendChild(document.createTextNode(result[i].name));
                     li.appendChild(a);
                     ul.appendChild(li);
-                    console.log(a);
                 }
             }
         });
@@ -122,24 +137,31 @@
     });
     
     function GetProductsWithType(id) {
-            var formData = new FormData();
+        var formData = new FormData();
 
-            formData.append("Id", id);
+        formData.append("Id", id);
 
-            console.log(id);
-
-            $.ajax({
-                url: "/Product/GetProductsWithType",
-                type: "POST",
-                data: formData,
-                dataType: "json",
-                contentType: false,
-                processData: false,
-                success: function (result) {
-                    BuildList(result);
-                }
-            });
+        if (filtersData != null) {
+            for (var i = 0; i < filtersData.length;i++)
+            {
+                formData.append(filtersData[i].htmlId,document.getElementById(filtersData[i].htmlId).value);
+            }
         }
+
+        GetFilters(id);
+
+        $.ajax({
+            url: "/Product/GetProductsWithType",
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                BuildList(result);
+            }
+        });
+    }
 
     function ClearList()
     {
@@ -214,6 +236,46 @@
                 window.location.href = "Product/GetProduct";
             }
         });
+    }
+
+    function GetFilters(id){
+        let formData = new FormData();
+        formData.append("id",id);
+
+        $.ajax({
+            url: "/Product/GetFilters",
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                BuildFilters(result);
+            }
+        });
+    }
+
+    function BuildFilters(data)
+    {
+        filtersData = data;
+        var filters = document.getElementById("filters");
+        while (filters.firstChild) {
+            filters.removeChild(filters.lastChild);
+        }
+
+        filterDataTypeId = 0;
+
+        for (let item = 0; item < data.length;item++) {
+            filterDataTypeId = data[item].productTypeId;
+            var input = document.createElement("input");
+            input.className = "filterField";
+            input.placeholder = data[item].paramName;
+            input.id = data[item].htmlId;
+            input.type = data[item].paramType;
+            filters.appendChild(input);
+        }
+
+        filters.innerHTML += '<button class="btn btn-primary" onclick=GetProductsWithType(' + filterDataTypeId + ')>Search</button>'
     }
     
 </script>

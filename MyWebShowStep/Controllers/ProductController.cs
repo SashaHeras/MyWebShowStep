@@ -46,7 +46,15 @@ namespace MyWebShowStep.Controllers
         public JsonResult GetProductsWithType()
         {
             int _type = Convert.ToInt32(Request.Form["Id"].ToString());
-            var _products = _context.Products.Where(p => p.TypeId == _type);
+            List<Product> _products = new List<Product>();
+            if (Request.Form.Count > 1)
+            {
+
+            }
+            else
+            {
+                _products = _context.Products.Where(p => p.TypeId == _type).ToList();
+            }
 
             foreach (var product in _products)
             {
@@ -178,6 +186,16 @@ namespace MyWebShowStep.Controllers
             }
 
             return Json(valid);
+        }
+
+        [HttpPost]
+        public JsonResult GetFilters()
+        {
+            var tId = Request.Form["id"];
+
+            var filters = _context.Filters.Where(f => f.ProductTypeId == Convert.ToInt32(tId)).ToList();
+
+            return Json(filters);
         }
 
         [HttpPost]

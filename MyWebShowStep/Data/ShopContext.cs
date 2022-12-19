@@ -16,6 +16,8 @@ namespace MyWebShowStep.Data
 
         public DbSet<Monitor> Monitors { get; set; }
 
+        public DbSet<Filter> Filters { get; set; }
+
         public StepShopContext()
         {
 
