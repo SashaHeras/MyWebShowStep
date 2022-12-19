@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using MyWebShowStep.Data;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 
 namespace MyWebShowStep.Controllers
 {
@@ -47,9 +49,147 @@ namespace MyWebShowStep.Controllers
         {
             int _type = Convert.ToInt32(Request.Form["Id"].ToString());
             List<Product> _products = new List<Product>();
+
             if (Request.Form.Count > 1)
             {
+                if (_type == 1)
+                {
+                    var filters = _context.Filters.Where(f => f.ProductTypeId == _type).ToList();
+                    List<string> filtersString = new List<string>();
 
+                    foreach(var f in filters)
+                    {
+                        filtersString.Add(Request.Form[f.HtmlId].ToString());
+                    }
+
+                    _products = _context.Products.Where(p=>p.TypeId == _type).ToList();
+
+                    if (filtersString[0] != "")
+                    {
+                        _products = (from prd in _products
+                                    where (
+                                    from gpu in _context.Gpus
+                                    where gpu.Vendor.Contains(filtersString[0]) == true
+                                    select gpu.ProductId
+                                    ).Contains(prd.Id) select prd).ToList();
+                    }
+                    if (filtersString[1] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Gpus
+                                     where gpu.GrapthChip.Contains(filtersString[1]) == true
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                    if (filtersString[2] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Gpus
+                                     where gpu.RAM == Convert.ToInt32(filtersString[2])
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                    if (filtersString[3] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Gpus
+                                     where gpu.MemoryType.Contains(filtersString[3]) == true
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                }
+                else if (_type == 2)
+                {
+                    var filters = _context.Filters.Where(f => f.ProductTypeId == _type).ToList();
+                    List<string> filtersString = new List<string>();
+
+                    foreach (var f in filters)
+                    {
+                        filtersString.Add(Request.Form[f.HtmlId].ToString());
+                    }
+
+                    _products = _context.Products.Where(p => p.TypeId == _type).ToList();
+
+                    if (filtersString[0] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Cpus
+                                     where gpu.CoreFamily.Contains(filtersString[0]) == true
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                    if (filtersString[1] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Cpus
+                                     where gpu.Speed == Convert.ToInt32(filtersString[1])
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                    if (filtersString[2] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Cpus
+                                     where gpu.CoresCount == Convert.ToInt32(filtersString[2])
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                }
+                else if (_type == 3)
+                {
+                    var filters = _context.Filters.Where(f => f.ProductTypeId == _type).ToList();
+                    List<string> filtersString = new List<string>();
+
+                    foreach (var f in filters)
+                    {
+                        filtersString.Add(Request.Form[f.HtmlId].ToString());
+                    }
+
+                    _products = _context.Products.Where(p => p.TypeId == _type).ToList();
+
+                    if (filtersString[0] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Monitors
+                                     where gpu.DisplaySize.Contains(filtersString[0]) == true
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                    if (filtersString[1] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Monitors
+                                     where gpu.RefreshSpeed == Convert.ToInt32(filtersString[1])
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                    if (filtersString[2] != "")
+                    {
+                        _products = (from prd in _products
+                                     where (
+                                     from gpu in _context.Monitors
+                                     where gpu.MatrixType.Contains(filtersString[2]) == true
+                                     select gpu.ProductId
+                                     ).Contains(prd.Id)
+                                     select prd).ToList();
+                    }
+                }
             }
             else
             {
