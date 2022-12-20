@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using MyWebShowStep.Data;
 using System;
 using System.IO;
@@ -47,10 +48,11 @@ namespace MyWebShowStep.Controllers
         [HttpPost]
         public JsonResult GetProductsWithType()
         {
-            int _type = Convert.ToInt32(Request.Form["Id"].ToString());
-            List<Product> _products = new List<Product>();
+            int? _type = Convert.ToInt32(Request.Form["Id"].ToString());            
+            List<Product> _products = _context.Products.ToList();
+            _products = SortByDefaultFilters(_products, Request);
 
-            if (Request.Form.Count > 1)
+            if (_type != null && _type != 0)
             {
                 if (_type == 1)
                 {
@@ -62,7 +64,7 @@ namespace MyWebShowStep.Controllers
                         filtersString.Add(Request.Form[f.HtmlId].ToString());
                     }
 
-                    _products = _context.Products.Where(p=>p.TypeId == _type).ToList();
+                    _products = _products.Where(p=>p.TypeId == _type).ToList();
 
                     if (filtersString[0] != "")
                     {
@@ -191,6 +193,10 @@ namespace MyWebShowStep.Controllers
                     }
                 }
             }
+            else if(_type == 0)
+            {
+
+            }
             else
             {
                 _products = _context.Products.Where(p => p.TypeId == _type).ToList();
@@ -203,6 +209,32 @@ namespace MyWebShowStep.Controllers
             }
 
             return Json(new { products = _products });
+        }
+
+        public List<Product> SortByDefaultFilters(List<Product> products, HttpRequest req)
+        {
+            int _priceFrom = Request.Form["priceFrom"] != "" ? Convert.ToInt32(Request.Form["priceFrom"].ToString()) : -1;
+            int _priceTo = Request.Form["priceTo"] != "" ? Convert.ToInt32(Request.Form["priceTo"].ToString()) : -1;
+            string _prdName = Request.Form["prdName"] != "" ? Request.Form["prdName"].ToString() : "";
+
+            if (_prdName != "")
+            {
+                products = products.Where(p => p.Name.Contains(_prdName) == true).ToList();
+            }
+            if (_priceFrom != -1)
+            {
+                products = (from prd in products
+                             where prd.Price >= _priceFrom
+                             select prd).ToList();
+            }
+            if (_priceTo != -1)
+            {
+                products = (from prd in products
+                             where prd.Price <= _priceTo
+                             select prd).ToList();
+            }
+
+            return products;
         }
         
         [HttpGet]
@@ -331,9 +363,13 @@ namespace MyWebShowStep.Controllers
         [HttpPost]
         public JsonResult GetFilters()
         {
-            var tId = Request.Form["id"];
+            int tId = Convert.ToInt32(Request.Form["id"]);
 
-            var filters = _context.Filters.Where(f => f.ProductTypeId == Convert.ToInt32(tId)).ToList();
+            var filters = _context.Filters.Where(f => f.ProductTypeId == 0).ToList();
+            if(tId != 0)
+            {
+                filters.AddRange(_context.Filters.Where(f => f.ProductTypeId == tId).ToList());
+            }
 
             return Json(filters);
         }

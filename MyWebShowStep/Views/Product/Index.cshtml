@@ -56,8 +56,15 @@
     }
 
     #filters{
+        
+    }
+
+    #default{
         display: flex;
-        height: 30px;
+    }
+
+    #custom {
+        display: flex;
     }
 
     .filterField{
@@ -82,7 +89,13 @@
     </div>
     <div class="center-row" id="productsList">
         <div id="filters">
+            <div>Filters:</div>
+            <div id="default">
 
+            </div>
+            <div id="custom">
+
+            </div>
         </div>
         <div>All products:</div>
         <div class="container" id="cont">
@@ -113,6 +126,7 @@
 
         filterDataTypeId = 0;
         GetAllProducts();
+        GetFilters(0);
 
         $.ajax({
             url: "/Product/GetTypes",
@@ -238,7 +252,7 @@
         });
     }
 
-    function GetFilters(id){
+    function GetFilters(id = 0){
         let formData = new FormData();
         formData.append("id",id);
 
@@ -258,24 +272,45 @@
     function BuildFilters(data)
     {
         filtersData = data;
-        var filters = document.getElementById("filters");
-        while (filters.firstChild) {
-            filters.removeChild(filters.lastChild);
+        var deft = document.getElementById("default");
+        while (deft.firstChild) {
+            deft.removeChild(deft.lastChild);
         }
 
-        filterDataTypeId = 0;
+        var custom = document.getElementById("custom");
+        while (custom.firstChild) {
+            custom.removeChild(custom.lastChild);
+        }
 
-        for (let item = 0; item < data.length;item++) {
+        for (let item = 0; item < 3; item++) {
             filterDataTypeId = data[item].productTypeId;
             var input = document.createElement("input");
             input.className = "filterField";
             input.placeholder = data[item].paramName;
             input.id = data[item].htmlId;
             input.type = data[item].paramType;
-            filters.appendChild(input);
+            deft.appendChild(input);
         }
 
-        filters.innerHTML += '<button class="btn btn-primary" onclick=GetProductsWithType(' + filterDataTypeId + ')>Search</button>'
+        if(data.length > 3)
+        {
+            filterDataTypeId = 0;
+
+            for (let item = 3; item < data.length; item++) {
+                filterDataTypeId = data[item].productTypeId;
+                var input = document.createElement("input");
+                input.className = "filterField";
+                input.placeholder = data[item].paramName;
+                input.id = data[item].htmlId;
+                input.type = data[item].paramType;
+                custom.appendChild(input);
+            }
+
+            custom.innerHTML += '<button class="btn btn-primary" onclick=GetProductsWithType(' + filterDataTypeId + ')>Search</button>'
+        }
+        else{
+            deft.innerHTML += '<button class="btn btn-primary" onclick=GetProductsWithType(' + filterDataTypeId + ')>Search</button>'
+        }
     }
     
 </script>
