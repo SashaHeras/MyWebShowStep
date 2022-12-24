@@ -5,7 +5,9 @@ using MyWebShowStep.Data;
 using System;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection.Metadata;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 
 namespace MyWebShowStep.Controllers
@@ -374,6 +376,8 @@ namespace MyWebShowStep.Controllers
             return Json(filters);
         }
 
+        
+
         [HttpPost]
         public JsonResult GetProductImg() {
             var product = _context.Products.Where(p => p.Id == Convert.ToInt32(Request.Form["Id"].ToString())).FirstOrDefault();
@@ -381,6 +385,101 @@ namespace MyWebShowStep.Controllers
             product.Image = System.IO.File.ReadAllBytes(fullPath);
 
             return Json(product.Image);
+        }
+
+        [HttpGet]
+        [Route("Product/CreateProduct")]
+        public IActionResult CreateProduct()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult GetCreateFields()
+        {
+            int tId = Convert.ToInt32(Request.Form["id"]);
+
+            var fields = _context.CreatePrdFields.Where(f => f.ProductTypeId == tId).ToList();
+
+            return Json(fields);
+        }
+
+        [HttpPost]
+        public JsonResult GetAllProductTypes()
+        {
+            var types = _context.ProductTypes;
+
+            return Json(types);
+        }
+
+        [HttpPost]
+        public JsonResult Create()
+        {
+            int type = Convert.ToInt32(Request.Form["prdType"]);
+
+            var file = Request.Form.Files[0];
+            var path = "C:\\Users\\acsel\\source\\repos\\MyWebShowStep\\MyWebShowStep\\Pictures\\";
+            var fileName = Guid.NewGuid().ToString().Replace("-", "") + Path.GetExtension(file.FileName);
+            string fullPath = Path.Combine(path, fileName);
+            using (var fileStream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyToAsync(fileStream);
+            }
+
+            Product prd = new Product()
+            {
+                UserId = 1,
+                Name = Request.Form["prdName"].ToString(),
+                TypeId = type,
+                Price = Convert.ToInt32(Request.Form["prdPrice"]),
+                ImagePath = fullPath
+            };
+
+            _context.Products.Add(prd);
+            _context.SaveChanges();
+
+            if (type == 1)
+            {
+                Gpu gp = new Gpu()
+                {
+                    Vendor = Request.Form["Vendor"].ToString(),
+                    GrapthChip = Request.Form["GrapthChip"].ToString(),
+                    RAM = Convert.ToInt32(Request.Form["RAM"]),
+                    MemoryType = Request.Form["MemoryType"].ToString(),
+                    ProductId = prd.Id
+                };
+
+                _context.Gpus.Add(gp);
+                _context.SaveChanges();
+            }
+            if (type == 2)
+            {
+                Cpu cp = new Cpu()
+                {
+                    CoreFamily = Request.Form["CoreFamily"].ToString(),
+                    CoresCount = Convert.ToInt32(Request.Form["CoresCount"]),
+                    Speed = Convert.ToInt32(Request.Form["Speed"]),
+                    ProductId = prd.Id
+                };
+
+                _context.Cpus.Add(cp);
+                _context.SaveChanges();
+            }
+            if (type == 3)
+            {
+                Data.Monitor mp = new Data.Monitor()
+                {
+                    DisplaySize = Request.Form["DisplaySize"].ToString(),
+                    MatrixType = Request.Form["MatrixType"].ToString(),
+                    RefreshSpeed = Convert.ToInt32(Request.Form["RefreshSpeed"]),
+                    ProductId = prd.Id
+                };
+
+                _context.Monitors.Add(mp);
+                _context.SaveChanges();
+            }
+
+            return Json(true);
         }
     }
 }

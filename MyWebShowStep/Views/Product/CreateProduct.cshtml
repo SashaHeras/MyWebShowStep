@@ -1,0 +1,275 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .main-row {
+        display: flex;
+    }
+
+    .center-row {
+        width: 50%;
+        padding-left: 10px;
+    }
+
+    .left-row {
+        width: 50%;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    #create-table{
+        margin-top:10px;
+    }
+
+    #image {
+        padding-top:10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        margin: 0 auto;
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    #name {
+        font-size: 24px;
+        font-style: normal black;
+    }
+
+    #price {
+        font-size: 18px;
+        color: red;
+    }
+</style>
+
+<div class="main-row">
+    <div class="left-row">
+        <input type="file" id="file_photo"></input>
+        <img id="image" />
+    </div>
+    <div class="center-row">
+        <div>Fields:</div>
+        <table id="create-table">
+            <tr>
+                <td>
+                    Name:
+                </td>
+                <td>
+                    <input id="prdName" type="text" style="width: 450px" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Price:
+                </td>
+                <td>
+                    <input id="prdPrice" type="number" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Product type:
+                </td>
+                <td>
+                    <select id="select-type" onchange="SaveType()">
+
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <div class="submit-block">
+            <button id="create" onclick="createProduct()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var obj = {};
+
+    var typeId = '';
+
+    var customFields = {};
+
+    function createProduct(){
+        obj.prdName = document.getElementById("prdName").value;
+        obj.prdPrice = document.getElementById("prdPrice").value;
+        obj.prdType = typeId;
+        obj.imagePath = $("#file_photo").get(0).files[0];
+        obj.userId = "1";
+
+        if (typeId == '1')
+        {
+            GpuFields();
+        }
+        if (typeId == '2')
+        {
+            CpuFields();
+        }
+        if (typeId == '3')
+        {
+            MonitorFields();
+        }
+    }
+
+    GetTypes();
+
+    function SaveType()
+    {
+        var e = document.getElementById("select-type");
+        typeId = e.value;
+
+        var formdata = new FormData();
+        formdata.append("id", typeId);
+        
+        $.ajax({
+            url: "/Product/GetCreateFields",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result != null) {
+                    ClearList();
+                    CreateSelectTypeFields(result);
+                }
+            }
+        });
+    }
+
+    function ClearList()
+    {
+        var elems = document.querySelectorAll(".custom-field");
+        elems.forEach(function(elem){
+            elem.remove();
+        });
+    }
+
+    function GetTypes()
+    {
+        $.ajax({
+            url: "/Product/GetAllProductTypes",
+            type: "POST",
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result != null) {
+                    CreateSelectTypes(result);
+                }
+            }
+        });
+    }
+
+    function CreateSelectTypeFields(data)
+    {
+        customFields = data;
+
+        for (var i in data) {
+            $("#create-table").append('<tr class="custom-field"><td>'+data[i].paramName+':</td><td><input id='+data[i].htmlId+' type='+data[i].paramType+'></input></td></tr>');
+        }
+    }
+
+    function CreateSelectTypes(data)
+    {
+        var select = document.getElementById("select-type");
+
+        for (var i in data) {
+            $("#select-type").append('<option value=' + data[i].id + '>' + data[i].name + '</option>');
+        }
+    }
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                document.getElementById('image').src = e.target.result;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#file_photo").change(function () {
+        readURL(this);
+    });
+
+    function MonitorFields() {
+        obj.displaySize = document.getElementById("DisplaySize").value;
+        obj.matrixType = document.getElementById("MatrixType").value;
+        obj.refreshSpeed = document.getElementById("RefreshSpeed").value;
+
+        for (var key in obj) {
+            formdata.append(key, obj[key]);
+        }
+
+        $.ajax({
+            url: "/Product/Create",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result == true) {
+                    alert("Created!");
+                }
+            }
+        });
+    }
+
+    function CpuFields() {
+        obj.coresCount = document.getElementById("CoresCount").value;
+        obj.speed = document.getElementById("Speed").value;
+        obj.coreFamily = document.getElementById("CoreFamily").value;
+
+        let formdata = new FormData();
+
+        for (var key in obj) {
+            formdata.append(key, obj[key]);
+        }
+
+        $.ajax({
+            url: "/Product/Create",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result == true) {
+                    alert("Created!");
+                }
+            }
+        });
+    }
+
+    function GpuFields() {
+        obj.vendor = document.getElementById("Vendor").value;
+        obj.chip = document.getElementById("GrapthChip").value;
+        obj.ram = document.getElementById("RAM").value;
+        obj.memory = document.getElementById("MemoryType").value;
+
+        let formdata = new FormData();
+
+        for (var key in obj) {
+            formdata.append(key, obj[key]);
+        }
+
+        $.ajax({
+            url: "/Product/Create",
+            type: "POST",
+            data: formdata,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result == true) {
+                    alert("Created!");
+                }
+            }
+        });
+    }
+</script>

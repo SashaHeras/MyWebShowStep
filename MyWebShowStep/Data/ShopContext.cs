@@ -18,6 +18,8 @@ namespace MyWebShowStep.Data
 
         public DbSet<Filter> Filters { get; set; }
 
+        public DbSet<CreatePrdField> CreatePrdFields { get; set; }
+
         public StepShopContext()
         {
 
