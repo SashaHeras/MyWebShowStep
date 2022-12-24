@@ -297,6 +297,42 @@ namespace MyWebShowStep.Controllers
             return View();
         }
 
+        [HttpGet]
+        [Route("Product/DeleteProduct/{id?}")]
+        public IActionResult DeleteProduct(int id)
+        {
+            Product prd = _context.Products.Where(p => p.Id == id).FirstOrDefault();
+            var filePath = "C:/Users/acsel/source/repos/MyWebShowStep/MyWebShowStep/Pictures/" + prd.ImagePath;
+            if(System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            if (prd.TypeId == 1)
+            {
+                Gpu gpu = _context.Gpus.Where(g => g.ProductId == prd.Id).FirstOrDefault();
+                _context.Gpus.Remove(gpu);
+                _context.Products.Remove(prd);
+                _context.SaveChanges();
+            }
+            if (prd.TypeId == 2)
+            {
+                Cpu cpu = _context.Cpus.Where(c => c.ProductId == prd.Id).FirstOrDefault();
+                _context.Cpus.Remove(cpu);
+                _context.Products.Remove(prd);
+                _context.SaveChanges();
+            }
+            if (prd.TypeId == 3)
+            {
+                Data.Monitor mon = _context.Monitors.Where(m => m.ProductId == prd.Id).FirstOrDefault();
+                _context.Monitors.Remove(mon);
+                _context.Products.Remove(prd);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Index", "Product");
+        }        
+
         [HttpPost]
         public JsonResult Edit()
         {
@@ -376,8 +412,6 @@ namespace MyWebShowStep.Controllers
             return Json(filters);
         }
 
-        
-
         [HttpPost]
         public JsonResult GetProductImg() {
             var product = _context.Products.Where(p => p.Id == Convert.ToInt32(Request.Form["Id"].ToString())).FirstOrDefault();
@@ -432,7 +466,7 @@ namespace MyWebShowStep.Controllers
                 Name = Request.Form["prdName"].ToString(),
                 TypeId = type,
                 Price = Convert.ToInt32(Request.Form["prdPrice"]),
-                ImagePath = fullPath
+                ImagePath = fileName
             };
 
             _context.Products.Add(prd);

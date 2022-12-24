@@ -197,9 +197,11 @@
     });
 
     function MonitorFields() {
-        obj.displaySize = document.getElementById("DisplaySize").value;
-        obj.matrixType = document.getElementById("MatrixType").value;
-        obj.refreshSpeed = document.getElementById("RefreshSpeed").value;
+        var formdata = new FormData();
+
+        obj.DisplaySize = document.getElementById("DisplaySize").value;
+        obj.MatrixType = document.getElementById("MatrixType").value;
+        obj.RefreshSpeed = document.getElementById("RefreshSpeed").value;
 
         for (var key in obj) {
             formdata.append(key, obj[key]);
@@ -221,9 +223,9 @@
     }
 
     function CpuFields() {
-        obj.coresCount = document.getElementById("CoresCount").value;
-        obj.speed = document.getElementById("Speed").value;
-        obj.coreFamily = document.getElementById("CoreFamily").value;
+        obj.CoresCount = document.getElementById("CoresCount").value;
+        obj.Speed = document.getElementById("Speed").value;
+        obj.CoreFamily = document.getElementById("CoreFamily").value;
 
         let formdata = new FormData();
 
@@ -247,10 +249,10 @@
     }
 
     function GpuFields() {
-        obj.vendor = document.getElementById("Vendor").value;
-        obj.chip = document.getElementById("GrapthChip").value;
-        obj.ram = document.getElementById("RAM").value;
-        obj.memory = document.getElementById("MemoryType").value;
+        obj.Vendor = document.getElementById("Vendor").value;
+        obj.GrapthChip = document.getElementById("GrapthChip").value;
+        obj.RAM = document.getElementById("RAM").value;
+        obj.MemoryType = document.getElementById("MemoryType").value;
 
         let formdata = new FormData();
 

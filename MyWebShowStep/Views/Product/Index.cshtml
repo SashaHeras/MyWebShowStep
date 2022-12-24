@@ -111,6 +111,9 @@
     var filtersData = null;
     var filterDataTypeId = 0;
 
+    GetAllProducts();
+    GetFilters(0);
+
     function GetAllProducts() {
         var list = document.getElementById("productsList");
         $.ajax({
@@ -129,8 +132,6 @@
         var ul = document.getElementById("productTypes");
 
         filterDataTypeId = 0;
-        GetAllProducts();
-        GetFilters(0);
 
         $.ajax({
             url: "/Product/GetTypes",
